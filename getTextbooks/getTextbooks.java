@@ -41,19 +41,19 @@ public class getTextbooks {
 		ArrayList<String> idList = new ArrayList<String>();
 		int beginIndex = 0;
 		int endIndex = 0;
-		boolean registration_nbr = false;
+		boolean startingString = false;
 
 		for(int i = 0; i < input.length(); i++) {
 			
-			if(i + 22 < input.length() && input.substring(i, i + 23).equals("registration_nbr=&quot;")) {
-				beginIndex = i + 23;
-				registration_nbr = true;
+			if(i + 6 < input.length() && input.substring(i, i + 7).equals("course=")) {
+				beginIndex = i + 7;
+				startingString = true;
 				i = beginIndex;
 			}
-			else if(i + 5 < input.length() && registration_nbr && input.substring(i, i + 6).equals("&quot;")) {
+			else if(i + 4 < input.length() && startingString && input.substring(i, i + 5).equals("&amp;")) {
 				endIndex = i;
 				idList.add(input.substring(beginIndex, endIndex));
-				registration_nbr = false;
+				startingString = false;
 			} 
 				
 		}
@@ -140,6 +140,7 @@ public class getTextbooks {
 		    for(int k = 0; k < courseNames.size(); k++) {
 		    	if(courseNames.get(k).getElementsByClass("productTableRegText").size() == 5) {
 		    		courseName = courseNames.get(k).getElementsByClass("productTableRegText").get(1).html();
+		    		courseName = courseName.replaceAll("\\&amp;", "\\&");
 		    		courseName += " " + courseNames.get(k).getElementsByClass("productTableRegText").get(2).html();  
 		    		courseInstructor =  courseNames.get(k).getElementsByClass("productTableRegText").get(4).html();
 		    		courseNameList.add("Course: " + courseName + ", Instructor: " + courseInstructor);
@@ -154,7 +155,7 @@ public class getTextbooks {
 
 		    	if(odd.get(i).getElementsByClass("productTableText").size() > 2 &&
 		    	   odd.get(i).getElementsByClass("productTableText").get(2).html().equals("Required")) 
-		    		ISBNList.add(courseNameList.get(i) + ", ISBN: " + odd.get(i).getElementsByClass("productTableText").get(0).html());
+		    		ISBNList.add(courseNameList.get(i) + ", ISBN: " + getISBN(odd.get(i).getElementsByClass("productTableText").get(0).html()));
 		    }
 		 
 		    for(int j = 0; j < even.size(); j++) {
@@ -194,7 +195,7 @@ public class getTextbooks {
 		UID = uID;
 	}
 	public static void main(String [] args) {
-		getTextbooks isbn = new getTextbooks("603658544", "huynh", "121");
+		getTextbooks isbn = new getTextbooks("403665300", "huynh", "121");
 		ArrayList<String> a = new ArrayList<String>();
 		a = isbn.getISBNList();
 		for (String b : a) 
