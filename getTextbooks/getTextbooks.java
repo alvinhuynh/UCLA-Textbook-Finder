@@ -91,6 +91,7 @@ public class getTextbooks {
 		    
 		    // Parse Course ID's from data
 		    Document doc1 = Jsoup.parse(output1);
+		    
 		    ArrayList<String> IDList = getCourseIDs(doc1.getElementsByTag("form").get(0).getElementsByAttributeValue("name","XMLDOC").toString());
 			
 			String output2 = "";
@@ -131,6 +132,20 @@ public class getTextbooks {
 		    // Parse ISBN numbers from data
 		    Document doc2 = Jsoup.parse(output2);
 		    
+		    Elements courseNames = doc2.getElementsByClass("productTableRegRow");
+		    
+		    ArrayList<String> courseNameList = new ArrayList<String>();
+		    String courseName;
+		    String courseInstructor;
+		    for(int k = 0; k < courseNames.size(); k++) {
+		    	if(courseNames.get(k).getElementsByClass("productTableRegText").size() == 5) {
+		    		courseName = courseNames.get(k).getElementsByClass("productTableRegText").get(1).html();
+		    		courseName += " " + courseNames.get(k).getElementsByClass("productTableRegText").get(2).html();  
+		    		courseInstructor =  courseNames.get(k).getElementsByClass("productTableRegText").get(4).html();
+		    		courseNameList.add("Course: " + courseName + ", Instructor: " + courseInstructor);
+		    	}
+		    }
+		    
 		    Elements odd = doc2.getElementsByClass("productTableOddRow");
 		    Elements even = doc2.getElementsByClass("productTableEvenRow");
 		    
@@ -139,13 +154,13 @@ public class getTextbooks {
 
 		    	if(odd.get(i).getElementsByClass("productTableText").size() > 2 &&
 		    	   odd.get(i).getElementsByClass("productTableText").get(2).html().equals("Required")) 
-		    		ISBNList.add(odd.get(i).getElementsByClass("productTableText").get(0).html());
+		    		ISBNList.add(courseNameList.get(i) + ", ISBN: " + odd.get(i).getElementsByClass("productTableText").get(0).html());
 		    }
 		 
 		    for(int j = 0; j < even.size(); j++) {
 		    	if(even.get(j).getElementsByClass("productTableText").size() > 2 &&
 		    	   even.get(j).getElementsByClass("productTableText").get(2).html().equals("Required")) 
-		    		ISBNList.add(getISBN(even.get(j).getElementsByClass("productTableText").get(0).html()));
+		    		ISBNList.add(courseNameList.get(j) + ", ISBN: " + getISBN(even.get(j).getElementsByClass("productTableText").get(0).html()));
 		    } 	    
 		    
 		} catch (Exception e) {
@@ -179,7 +194,7 @@ public class getTextbooks {
 		UID = uID;
 	}
 	public static void main(String [] args) {
-		getTextbooks isbn = new getTextbooks("603658544", "hsieh", "121");
+		getTextbooks isbn = new getTextbooks("603658544", "huynh", "121");
 		ArrayList<String> a = new ArrayList<String>();
 		a = isbn.getISBNList();
 		for (String b : a) 
